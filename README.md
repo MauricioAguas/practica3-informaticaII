@@ -56,5 +56,6 @@ g++ -o decodificador ejercicio1/decodificador.cpp ejercicio1/utils.cpp
 ./decodificador <semilla> <método> <archivo_codificado> <archivo_salida>
 ```
 
-## Autor
+## Autores
 Mauricio Aguas - Estudiante de Ingeniería Electrónica
+Sergio Chaves - Estudiante de Ingeniería Electrónica
