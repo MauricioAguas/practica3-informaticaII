@@ -1,6 +1,6 @@
 #include "banco.h"
 
 int main() {
-    menuPrincipalGeneral();
+    inicializarSistema();
     return 0;
 }
