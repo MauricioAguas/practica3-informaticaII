@@ -6,6 +6,13 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <limits> // Para numeric_limits
+
+// Función para limpiar el buffer de entrada
+void limpiarBuffer() {
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
 
 bool CargarMetaDesdeArchivo(const std::string& nombreArchivo, int& semilla, int& len_admin) {
     std::ifstream f(nombreArchivo);
@@ -41,12 +48,12 @@ bool CargarMetaDesdeArchivo(const std::string& nombreArchivo, int& semilla, int&
     return true;
 }
 
-int NumeroLineasArchivo(string nombreArchivo){
-    string linea;
+int NumeroLineasArchivo(std::string nombreArchivo){
+    std::string linea;
     int numero_linea_actual=0;
-    ifstream archivo(nombreArchivo);
+    std::ifstream archivo(nombreArchivo);
     if(!archivo.is_open()) return 0;
-    while(getline(archivo, linea)){
+    while(std::getline(archivo, linea)){
         numero_linea_actual++;
     }
     archivo.close();
@@ -54,25 +61,25 @@ int NumeroLineasArchivo(string nombreArchivo){
 }
 
 
-bool comprobarLectura( string nombredelarchivo){
-    ifstream archivo;
+bool comprobarLectura( std::string nombredelarchivo){
+    std::ifstream archivo;
     archivo.open(nombredelarchivo);
     if(!archivo){
-        cerr << "No se puede abrir el archivo. No se encuentra." << endl;
+        std::cerr << "No se puede abrir el archivo. No se encuentra." << std::endl;
         return false;
     }else{
         archivo.close();
-        cout << "Verificacion exitosa" <<endl;
+        std::cout << "Verificacion exitosa" <<std::endl;
         return true;
     }
 }
 
-string leerUnaLinea(int numero_linea_deseada, string nombreArchivo){
-    string linea;
+std::string leerUnaLinea(int numero_linea_deseada, std::string nombreArchivo){
+    std::string linea;
     int numero_linea_actual=0;
-    ifstream archivo(nombreArchivo);
+    std::ifstream archivo(nombreArchivo);
     if(!archivo.is_open()) return "";
-    while(getline(archivo, linea)){
+    while(std::getline(archivo, linea)){
         if(numero_linea_actual==numero_linea_deseada){
             archivo.close();
             return linea;
@@ -92,7 +99,7 @@ int PrimeraLineaUsuarios(const std::string& nombreArchivo){
     return 1;
 }
 
-string ponerCeros(string s, int n){
+std::string ponerCeros(std::string s, int n){
     if(n <= 0) return s;
     if((int)s.length() < n){
         s.append(n - s.length(), '0');
@@ -106,9 +113,9 @@ string ponerCeros(string s, int n){
 
 
 
-bool verificacionAdministrador(string nombreArchivo, int semilla_de_codificacion, int longitud){
-    string contraseña_ingresada;
-    string contraseña_guardada = leerUnaLinea(1, nombreArchivo);
+bool verificacionAdministrador(std::string nombreArchivo, int semilla_de_codificacion, int longitud){
+    std::string contraseña_ingresada;
+    std::string contraseña_guardada = leerUnaLinea(1, nombreArchivo);
     // OJO: con META, la contraseña está en la línea 1.
     // Si no hay META, contraseña está en línea 0. Intentamos fallback:
     if(contraseña_guardada.empty()){
@@ -120,8 +127,8 @@ bool verificacionAdministrador(string nombreArchivo, int semilla_de_codificacion
         return false;
     }
 
-    cout << "Ingrese la contraseña: ";
-    cin >> contraseña_ingresada;
+    std::cout << "Ingrese la contraseña: ";
+    std::cin >> contraseña_ingresada;
 
     contraseña_guardada = decodificarM2(contraseña_guardada, semilla_de_codificacion);
     contraseña_guardada = quitarCeros(contraseña_guardada, longitud);
@@ -131,15 +138,15 @@ bool verificacionAdministrador(string nombreArchivo, int semilla_de_codificacion
 }
 
 
-void EscribirContraseñasobreArchivo(string line, string nombreArchivo){
-    ofstream archivo;
+void EscribirContraseñasobreArchivo(std::string line, std::string nombreArchivo){
+    std::ofstream archivo;
     archivo.open(nombreArchivo);
-    archivo<<line<<endl;
+    archivo<<line<<std::endl;
     archivo.close();
 }
 
 
-bool esNumero(string str){
+bool esNumero(std::string str){
     for(char c : str){
         if((c < '0') || (c > '9')){
             return false;
@@ -149,13 +156,13 @@ bool esNumero(string str){
 }
 
 int numeroLegal(){
-    string entrada;
+    std::string entrada;
     bool entradaValida = false;
     int numero = 0;
 
     while(!entradaValida){
-        cout << "Ingrese la semilla de codificacion: ";
-        cin >> entrada;
+        std::cout << "Ingrese la semilla de codificacion: ";
+        std::cin >> entrada;
 
         entradaValida = esNumero(entrada);
 
@@ -166,37 +173,34 @@ int numeroLegal(){
             }
 
             if(numero < 1){
-
                 entradaValida = false;
             }
         }
 
         if(!entradaValida){
-            cout << "Entrada invalida. Por favor, ingrese un numero entero mayor o igual a 1." << endl;
+            std::cout << "Entrada invalida. Por favor, ingrese un numero entero mayor o igual a 1." << std::endl;
+            limpiarBuffer();
         }
     }
 
     return numero;
 }
 
-string CrearArhcivo(int& n, int &longitud, vector<int>& longitud_cedula, vector<int>& longitd_clave, vector<int>& longitud_saldo){
+std::string CrearArhcivo(int& n, int &longitud, std::vector<int>& longitud_cedula, std::vector<int>& longitd_clave, std::vector<int>& longitud_saldo){
     //Primera parte: Pedir una contraseña para el administrados y encriptarla
-    string nombre_nuevo_archivo= "Nuevo archivo.txt";
-    string lecturaConsola = "";
-    cout << "Ingrese la clave del administrador: " << endl;
-    cin >> lecturaConsola;
+    std::string nombre_nuevo_archivo= "Nuevo archivo.txt";
+    std::string lecturaConsola = "";
+    std::cout << "Ingrese la clave del administrador: " << std::endl;
+    std::cin >> lecturaConsola;
     longitud = lecturaConsola.length();
 
-    string lineaBin= "";
+    std::string lineaBin= "";
 
     for (int i = 0; i < longitud; i++) {
         char aux[9];
         convIntBin(aux, lecturaConsola[i]);
         lineaBin+= aux;
     }
-
-    //cout << "La contraseña en binario es: " << lineaBin << endl;
-
 
     n = numeroLegal();
 
@@ -211,11 +215,11 @@ string CrearArhcivo(int& n, int &longitud, vector<int>& longitud_cedula, vector<
             lineaBin += "0";
     }
 
-    string contraseña_encriptada;
+    std::string contraseña_encriptada;
 
     contraseña_encriptada= codificarM2(lineaBin, n);
 
-    ofstream archivo(nombre_nuevo_archivo);
+    std::ofstream archivo(nombre_nuevo_archivo);
     archivo << "META n=" << n << " len_admin=" << longitud << "\n";
     archivo << contraseña_encriptada << "\n";
     archivo.close();
@@ -228,14 +232,14 @@ string CrearArhcivo(int& n, int &longitud, vector<int>& longitud_cedula, vector<
     return nombre_nuevo_archivo;
 }
 
-void ComprobacionDeArchivo(string& nombre_del_archivo, bool& bandera, int &semilla, int& longitud, vector<int>& longitud_cedula, vector<int>& longitd_clave, vector<int>& longitud_saldo){
+void ComprobacionDeArchivo(std::string& nombre_del_archivo, bool& bandera, int &semilla, int& longitud, std::vector<int>& longitud_cedula, std::vector<int>& longitd_clave, std::vector<int>& longitud_saldo){
     bool inicio= true;
     char respuesta= ' ';
-    string verificar_tamaño= "";
+    std::string verificar_tamaño= "";
     char respuesta_creacion_archivo= ' ';
 
     while(inicio){
-        cout <<"\nVerficacion de los archivos del sistema...\n"<<endl;
+        std::cout <<"\nVerficacion de los archivos del sistema...\n"<<std::endl;
         bandera= comprobarLectura(nombre_del_archivo);
         if(bandera){
 
@@ -252,9 +256,10 @@ void ComprobacionDeArchivo(string& nombre_del_archivo, bool& bandera, int &semil
             inicio = false;
 
         }else{
-            cout << "Desea crear un archivo? (Ingrese s(si) o n(no)): "; cin >>verificar_tamaño;
+            std::cout << "Desea crear un archivo? (Ingrese s(si) o n(no)): "; std::cin >>verificar_tamaño;
             if(verificar_tamaño.length() > 1){
-                cout << "Solo puedes ingresar una letra" <<endl;
+                std::cout << "Solo puedes ingresar una letra" <<std::endl;
+                limpiarBuffer();
             }else if (verificar_tamaño.length() ==1 && verificar_tamaño != "\n"){
                 respuesta= verificar_tamaño[0];
                 switch(respuesta){
@@ -265,7 +270,7 @@ void ComprobacionDeArchivo(string& nombre_del_archivo, bool& bandera, int &semil
                 {
                     bool bandera_interna= true;
                     while(bandera_interna){
-                        cout<< "Desea salir del programa? (Ingrese s(si) o n(no)):  "; cin >> respuesta_creacion_archivo;
+                        std::cout<< "Desea salir del programa? (Ingrese s(si) o n(no)):  "; std::cin >> respuesta_creacion_archivo;
                         switch(respuesta_creacion_archivo){
                         case 's':{
                             inicio=false;
@@ -275,18 +280,16 @@ void ComprobacionDeArchivo(string& nombre_del_archivo, bool& bandera, int &semil
                             bandera_interna= false;
                             break;
                         default:
-                            cout << "\nIngresaste una opcion invalida" <<endl;
+                            std::cout << "\nIngresaste una opcion invalida" <<std::endl;
+                            limpiarBuffer();
                             break;
                         }
-                        cin.clear();
-                        cin.ignore(255, '\n');
                     }
                 }
                 break;
                 default:
-                    cout << "\nIngresaste una opcion invalida" <<endl;
-                    cin.clear();
-                    cin.ignore(255, '\n');
+                    std::cout << "\nIngresaste una opcion invalida" <<std::endl;
+                    limpiarBuffer();
                     break;
                 }
             }
@@ -303,11 +306,11 @@ bool VerificarNumeroPositivo( int numero){
     }
 }
 
-bool cedulaRepetida(string nombre_del_archivo, string cedula_a_verificar){
+bool cedulaRepetida(std::string nombre_del_archivo, std::string cedula_a_verificar){
     int numero_de_lineas = NumeroLineasArchivo(nombre_del_archivo);
     int start = PrimeraLineaUsuarios(nombre_del_archivo);
     for(int i = start; i < numero_de_lineas; i += 3){
-        string linea = leerUnaLinea(i, nombre_del_archivo);
+        std::string linea = leerUnaLinea(i, nombre_del_archivo);
         if(linea == cedula_a_verificar){
             return true;
         }
@@ -317,28 +320,29 @@ bool cedulaRepetida(string nombre_del_archivo, string cedula_a_verificar){
 
 
 
-void CrearUsuario(string nombre_archivo, int& semilla, vector<int>& longitud_cedula, vector<int>& longitd_clave, vector<int>& longitud_saldo){
-    ofstream archivo;
-    string linea;
+void CrearUsuario(std::string nombre_archivo, int& semilla, std::vector<int>& longitud_cedula, std::vector<int>& longitd_clave, std::vector<int>& longitud_saldo){
+    std::ofstream archivo;
+    std::string linea;
     long long int numero;
 
-    archivo.open(nombre_archivo, ios::app);
+    archivo.open(nombre_archivo, std::ios::app);
     for(int i=0; i<3; i++){
         if(i==0){
             bool bandera=true;
             while(bandera){
-                cout <<"Ingrese la cedula (Solo ingrese numeros): ";
+                std::cout <<"Ingrese la cedula (Solo ingrese numeros): ";
                 try{
-                    if(!(cin >> numero)){
+                    if(!(std::cin >> numero)){
                         throw 1;
                     }else{
                         if(numero<0){
-                            cout<<"Solo puede ingresar numeros positivos"<<endl;
+                            std::cout<<"Solo puede ingresar numeros positivos"<<std::endl;
+                            limpiarBuffer();
                         }else{
-                            string version_string= to_string(numero);
+                            std::string version_string= std::to_string(numero);
                             int longitud = version_string.length();
                             longitud_cedula.push_back(longitud);
-                            string lineaBina= "";
+                            std::string lineaBina= "";
                             for (int i = 0; i < longitud; i++) {
                                 char aux[9];
                                 convIntBin(aux, version_string[i]);
@@ -348,26 +352,25 @@ void CrearUsuario(string nombre_archivo, int& semilla, vector<int>& longitud_ced
                             version_string= ponerCeros(lineaBina, semilla);
                             version_string= codificarM2(version_string, semilla);
                             if(cedulaRepetida(nombre_archivo, version_string)){
-                                cout << "No se puede agregar esta cedula porque ya existe en el archivo" <<endl;
+                                std::cout << "No se puede agregar esta cedula porque ya existe en el archivo" <<std::endl;
                             }else{
-                                archivo << version_string<< endl;
+                                archivo << version_string<< std::endl;
                                 bandera=false;
                             }
                         }
                     }
                 }catch(int error){
                     if(error==1){
-                        cout<<"\n Ingresate una opcion invalida. Solo puede ingresar numeros\n"<<endl;
-                        cin.clear();
-                        cin.ignore(255, '\n');
+                        std::cout<<"\n Ingresaste una opcion invalida. Solo puede ingresar numeros\n"<<std::endl;
+                        limpiarBuffer();
                     }
                 }
             }
         }else if(i==1){
-            cout <<"Ingrese la clave: "; cin >> linea;
+            std::cout <<"Ingrese la clave: "; std::cin >> linea;
             int longitud = linea.length();
             longitd_clave.push_back(longitud);
-            string lineaBina= "";
+            std::string lineaBina= "";
             for (int i = 0; i < longitud; i++) {
                 char aux[9];
                 convIntBin(aux, linea[i]);
@@ -375,20 +378,20 @@ void CrearUsuario(string nombre_archivo, int& semilla, vector<int>& longitud_ced
             }
             lineaBina= ponerCeros(lineaBina, semilla);
             linea= codificarM2(lineaBina, semilla);
-            archivo << linea<< endl;
+            archivo << linea<< std::endl;
         }else{
             bool bandera2=true;
             while(bandera2){
-                cout <<"Ingrese el saldo (Solo ingrese numeros): ";
+                std::cout <<"Ingrese el saldo (Solo ingrese numeros): ";
                 try{
-                    if(!(cin >> numero)){
+                    if(!(std::cin >> numero)){
                         throw 1;
                     }else{
                         if(VerificarNumeroPositivo(numero)){
-                            string version_string_saldo= to_string(numero);
+                            std::string version_string_saldo= std::to_string(numero);
                             int longitud = version_string_saldo.length();
                             longitud_saldo.push_back(longitud);
-                            string lineaBina= "";
+                            std::string lineaBina= "";
                             for (int i = 0; i < longitud; i++) {
                                 char aux[9];
                                 convIntBin(aux, version_string_saldo[i]);
@@ -396,18 +399,18 @@ void CrearUsuario(string nombre_archivo, int& semilla, vector<int>& longitud_ced
                             }
                             lineaBina= ponerCeros(lineaBina, semilla);
                             version_string_saldo= codificarM2(lineaBina, semilla);
-                            archivo << version_string_saldo<< endl;
+                            archivo << version_string_saldo<< std::endl;
                             bandera2=false;
                         }else{
-                            cout<<"Solo puede ingresar numeros positivos"<<endl;
+                            std::cout<<"Solo puede ingresar numeros positivos"<<std::endl;
+                            limpiarBuffer();
                         }
 
                     }
                 }catch(int error){
                     if(error==1){
-                        cout<<"\n Ingresate una opcion invalida. Solo puede ingresar numeros\n"<<endl;
-                        cin.clear();
-                        cin.ignore(255, '\n');
+                        std::cout<<"\n Ingresaste una opcion invalida. Solo puede ingresar numeros\n"<<std::endl;
+                        limpiarBuffer();
                     }
                 }
             }
@@ -417,29 +420,29 @@ void CrearUsuario(string nombre_archivo, int& semilla, vector<int>& longitud_ced
     archivo.close();
 }
 
-string ValidarCedula_o_Saldo(string nombre){
-    string version_string;
+std::string ValidarCedula_o_Saldo(std::string nombre){
+    std::string version_string;
     long long int numero;
     bool bandera=true;
     while(bandera){
-        cout <<"Ingrese "<<nombre<<" (Solo ingrese numeros): ";
+        std::cout <<"Ingrese "<<nombre<<" (Solo ingrese numeros): ";
         try{
-            if(!(cin >> numero)){
+            if(!(std::cin >> numero)){
                 throw 1;
             }else{
                 if(VerificarNumeroPositivo(numero)){
-                    version_string= to_string(numero);
+                    version_string= std::to_string(numero);
                     bandera=false;
                 }else{
-                    cout<<"Solo puede ingresar numeros positivos"<<endl;
+                    std::cout<<"Solo puede ingresar numeros positivos"<<std::endl;
+                    limpiarBuffer();
                 }
 
             }
         }catch(int error){
             if(error==1){
-                cout<<"\n Ingresate una opcion invalida. Solo puede ingresar numeros\n"<<endl;
-                cin.clear();
-                cin.ignore(255, '\n');
+                std::cout<<"\n Ingresaste una opcion invalida. Solo puede ingresar numeros\n"<<std::endl;
+                limpiarBuffer();
             }
         }
     }
@@ -447,16 +450,16 @@ string ValidarCedula_o_Saldo(string nombre){
 }
 
 
-bool ValidacionUsuario(string nombre_del_archivo, int semilla, int& numero_de_linea_cedula,
-                       vector<int> longitud, int& contador){
-    string cedula = ValidarCedula_o_Saldo("la cedula");
+bool ValidacionUsuario(std::string nombre_del_archivo, int semilla, int& numero_de_linea_cedula,
+                       std::vector<int> longitud, int& contador){
+    std::string cedula = ValidarCedula_o_Saldo("la cedula");
 
     int numero_lineas_del_archivo = NumeroLineasArchivo(nombre_del_archivo);
     int start = PrimeraLineaUsuarios(nombre_del_archivo);
 
     contador = 0; // cuenta usuarios, no líneas
     for(int numero_linea_actual = start; numero_linea_actual < numero_lineas_del_archivo; numero_linea_actual += 3){
-        string linea = leerUnaLinea(numero_linea_actual, nombre_del_archivo);
+        std::string linea = leerUnaLinea(numero_linea_actual, nombre_del_archivo);
         linea = decodificarM2(linea, semilla);
         linea = quitarCeros(linea, longitud[contador]);
         linea = convBinInt(linea);
@@ -475,20 +478,24 @@ char VerificarTamaño(){
     char respuesta= ' ';
     bool var_control=true;
     while(var_control){
-        string verificar_tamaño;
-        cin>> verificar_tamaño;
+        std::string verificar_tamaño;
+        std::cin>> verificar_tamaño;
         if(verificar_tamaño.length() > 1){
-            cout << "Solo puedes ingresar una letra: ";
+            std::cout << "Solo puedes ingresar una letra: ";
+            limpiarBuffer();
         }else if (verificar_tamaño.length() ==1 && verificar_tamaño != "\n"){
             respuesta= verificar_tamaño[0];
             var_control=false;
+        } else {
+            std::cout << "Entrada invalida, intenta de nuevo: ";
+            limpiarBuffer();
         }
     }
     return respuesta;
 }
 
-bool VerificarSaldoRetirar(int& saldo_entero, int numero_linea_deseada, string nombreArchivo, int semilla, int longitud, long long int cantidad_a_retirar){
-    string saldo_string=leerUnaLinea(numero_linea_deseada, nombreArchivo);
+bool VerificarSaldoRetirar(int& saldo_entero, int numero_linea_deseada, std::string nombreArchivo, int semilla, int longitud, long long int cantidad_a_retirar){
+    std::string saldo_string=leerUnaLinea(numero_linea_deseada, nombreArchivo);
     saldo_string= decodificarM2(saldo_string, semilla);
     saldo_string= quitarCeros(saldo_string, longitud);
     saldo_string= convBinInt(saldo_string);
@@ -500,9 +507,9 @@ bool VerificarSaldoRetirar(int& saldo_entero, int numero_linea_deseada, string n
     }
 }
 
-bool VerificarSaldo(int& saldo_entero, int numero_linea_deseada, string nombreArchivo, int semilla, int longitud){
+bool VerificarSaldo(int& saldo_entero, int numero_linea_deseada, std::string nombreArchivo, int semilla, int longitud){
 
-    string saldo_string = leerUnaLinea(numero_linea_deseada, nombreArchivo);
+    std::string saldo_string = leerUnaLinea(numero_linea_deseada, nombreArchivo);
     saldo_string = decodificarM2(saldo_string, semilla);
     saldo_string = quitarCeros(saldo_string, longitud);
     saldo_string = convBinInt(saldo_string);
@@ -515,10 +522,10 @@ bool VerificarSaldo(int& saldo_entero, int numero_linea_deseada, string nombreAr
     }
 }
 
-string EncriptarNuevosValores(int valor, int semilla){
-    string version_string_saldo= to_string(valor);
+std::string EncriptarNuevosValores(int valor, int semilla){
+    std::string version_string_saldo= std::to_string(valor);
     int longitud = version_string_saldo.length();
-    string lineaBina= "";
+    std::string lineaBina= "";
     for (int i = 0; i < longitud; i++) {
         char aux[9];
         convIntBin(aux, version_string_saldo[i]);
@@ -529,21 +536,21 @@ string EncriptarNuevosValores(int valor, int semilla){
     return version_string_saldo;
 }
 
-void ActualizarSaldo(int valorSaldo, string nombreArchivo, int linea_a_cambiar, int semilla, vector<int>&vectorsaldo, int posicion){
+void ActualizarSaldo(int valorSaldo, std::string nombreArchivo, int linea_a_cambiar, int semilla, std::vector<int>&vectorsaldo, int posicion){
 
-    ifstream archivo_lectura(nombreArchivo);
-    ofstream archivo_escritura("temp.txt");
-    string versionstring= to_string(valorSaldo);
+    std::ifstream archivo_lectura(nombreArchivo);
+    std::ofstream archivo_escritura("temp.txt");
+    std::string versionstring= std::to_string(valorSaldo);
     int longitud= versionstring.length();
     vectorsaldo[posicion]= longitud;
-    string linea;
+    std::string linea;
     int contador=0;
-    string nueva_linea= EncriptarNuevosValores(valorSaldo, semilla);
-    while(getline(archivo_lectura, linea)){
+    std::string nueva_linea= EncriptarNuevosValores(valorSaldo, semilla);
+    while(std::getline(archivo_lectura, linea)){
         if (contador == linea_a_cambiar){
-            archivo_escritura<<nueva_linea<<endl;
+            archivo_escritura<<nueva_linea<<std::endl;
         }else{
-            archivo_escritura<<linea<<endl;
+            archivo_escritura<<linea<<std::endl;
         }
         contador++;
     }
