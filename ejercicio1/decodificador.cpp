@@ -1,8 +1,8 @@
-#include "codificador.h"
+#include "decodificador.h"
 #include "binario_utils.h"
 #include <cstring>
 
-void codificarMetodo1(char* binario, int n) {
+void decodificarMetodo1(char* binario, int n) {
     int len = strlen(binario);
     char resultado[MAX_BUFFER] = {0};
     char bloqueAnterior[MAX_SEMILLA] = {0};
@@ -36,14 +36,14 @@ void codificarMetodo1(char* binario, int n) {
     strcpy(binario, resultado);
 }
 
-void codificarMetodo2(char* binario, int n) {
+void decodificarMetodo2(char* binario, int n) {
     int len = strlen(binario);
     char resultado[MAX_BUFFER] = {0};
     for (int i = 0; i < len; i += n) {
         char bloque[MAX_SEMILLA];
         strncpy(bloque, binario + i, n);
         bloque[n] = '\0';
-        desplazarCircularDerecha(bloque, n);
+        desplazarCircularIzquierda(bloque, n);
         strncat(resultado, bloque, n);
     }
     strcpy(binario, resultado);
