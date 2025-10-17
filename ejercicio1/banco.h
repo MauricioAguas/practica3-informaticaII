@@ -11,6 +11,8 @@
  */
 void inicializarSistema();
 void menuPrincipal(int semilla);
+void seleccionarMetodo();
+
 
 // Modo administrador
 bool validarAdministrador(int semilla);
